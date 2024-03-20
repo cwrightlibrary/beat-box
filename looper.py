@@ -4,16 +4,19 @@ from os.path import dirname, join, realpath
 from scamp import *
 from time import sleep
 
-TEMPO = 90
+TEMPO = 113
 SESSION = Session(tempo=TEMPO)
 DRUMMER_SF = join(dirname(realpath(__file__)), "drum-kit.sf2")
-PIANO_SF = join(dirname(realpath(__file__)), "steinway.sf2")
 
 DRUMMER = SESSION.new_part("Brush", soundfont=DRUMMER_SF)
-PIANO = SESSION.new_part("Piano", soundfont=PIANO_SF)
 
-BEATS = [1, 2, 3, 4]
+TIME_SIGNATURE = [3, 4]
+
+BEATS = [x for x in range(1, TIME_SIGNATURE[0] + 1)]
 C_BEAT = 0
+
+BARS = [x for x in range(1, TIME_SIGNATURE[1] + 1)]
+C_BAR = 0
 
 BRUSH_SWIRLS = electric_snare
 HI_HAT_CLOSED = closed_hi_hat
@@ -53,37 +56,33 @@ def playnote(drum_note, length, volume, drummer):
             drummer.play_chord(drum_note, volume, length)
 
 
-def jazz_pattern(note, drummer):
-    if note == 1:
+def jazz_pattern(beat, bar, drummer):
+    if beat == 1:
         playnote([KICK, RIDE], quarter_note, 1, drummer)
-    elif note == 2:
+    elif beat == 2:
         playnote([SNARE, RIDE], triplet_quarter_note * 2, 1, drummer)
         playnote([KICK, RIDE], triplet_quarter_note, 1, drummer)
-    elif note == 3:
-        playnote([RIDE], triplet_quarter_note, 1, drummer)
-        playnote([SNARE], triplet_quarter_note * 2, 0.3, drummer)
-    elif note == 4:
-        playnote([SNARE, RIDE], triplet_quarter_note * 2, 1, drummer)
-        playnote([SNARE], triplet_quarter_note, 0.4, drummer)
-
-
-def chords(note, piano):
-    if note == 1:
-        piano.play_chord([60, 64, 67, 71], 0.8, quarter_note)
-    elif note == 2:
-        piano.play_chord([64, 67, 71, 74], 0.8, quarter_note)
-    elif note == 3:
-        piano.play_chord([60, 64, 67, 71], 0.8, quarter_note)
-    elif note == 4:
-        piano.play_chord([64, 67, 71, 74], 0.8, quarter_note)
+    elif beat == 3:
+        if bar == 2 or bar == 4:
+            playnote([RIDE], triplet_quarter_note, 1, drummer)
+            playnote([SNARE], triplet_quarter_note * 2, 0.35, drummer)
+        else:
+            playnote([RIDE], quarter_note, 1, drummer)
+    elif beat == 4:
+        if bar == 4:
+            playnote([SNARE, RIDE], triplet_quarter_note * 2, 1, drummer)
+            playnote([SNARE], triplet_quarter_note, 0.4, drummer)
+        else:
+            playnote([SNARE, RIDE], quarter_note, 1, drummer)
 
 
 fork(play_bg, args=(DRUMMER,))
 sleep(1)
 while C_BEAT < len(BEATS):
-    print(str(BEATS[C_BEAT]))
-    fork(chords, args=(BEATS[C_BEAT], PIANO,))
-    jazz_pattern(BEATS[C_BEAT], DRUMMER)
+    jazz_pattern(BEATS[C_BEAT], BARS[C_BAR], DRUMMER)
     C_BEAT += 1
     if C_BEAT == len(BEATS):
+        C_BAR += 1
         C_BEAT = 0
+    if C_BAR == len(BARS):
+        C_BAR = 0
