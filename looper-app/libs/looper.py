@@ -4,7 +4,6 @@ from os.path import dirname, join, realpath
 from PIL import ImageTk, Image
 from scamp import *
 from time import sleep
-import tkinter as tk
 
 TEMPO = 150
 SESSION = Session(tempo=TEMPO)
@@ -77,32 +76,10 @@ def chords(note, piano):
     elif note == 4:
         piano.play_chord([64, 67, 71, 74], 0.8, quarter_note)
 
-window = tk.Tk()
-window.title("Image")
-window.geometry("637x824")
-window.configure(background="grey")
-
-images = join(dirname(realpath(__file__)), "images", "small")
-tally = 1
-path = join(images, str(tally) + ".jpg")
-img = ImageTk.PhotoImage(Image.open(path))
-panel = tk.Label(window, image=img)
-panel.pack(side="bottom", fill="both", expand="yes")
-
-fork(play_bg, args=(DRUMMER,))
-sleep(1)
-
-jazz_pattern(BEATS[C_BEAT], DRUMMER)
-C_BEAT += 1
-
-window.mainloop()
-
 while C_BEAT < len(BEATS):
     print(str(BEATS[C_BEAT]))
-    # fork(chords, args=(BEATS[C_BEAT], PIANO,))
     jazz_pattern(BEATS[C_BEAT], DRUMMER)
     C_BEAT += 1
-    tally += 1
     if C_BEAT == len(BEATS):
         C_BEAT = 0
 
