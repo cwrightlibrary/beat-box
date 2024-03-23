@@ -73,6 +73,7 @@ crashes = [crash_cymbal_1, crash_cymbal_2]
 drum_soundfont = join(dirname(realpath(__file__)), "drum-kit.sf2")
 
 BRUSH_SWIRLS = electric_snare
+CRASH = crash_cymbal_1
 HI_HAT_CLOSED = closed_hi_hat
 HI_HAT_OPEN = open_hi_hat
 HI_HAT_PEDAL = pedal_hi_hat
@@ -85,7 +86,7 @@ NO_INSTRUMENT = None
 
 def play_bg(drummer):
     while True:
-        drummer.play_note(BRUSH_SWIRLS, 1, 4)
+        drummer.play_note(BRUSH_SWIRLS, 1, 120)
 
 
 def playnote(drum_note, length, volume, drummer):
@@ -122,48 +123,6 @@ def jazz_pattern(note, drummer):
     elif note == 4:
         playnote([SNARE, RIDE], triplet_quarter_note * 2, 1, drummer)
         playnote([SNARE], triplet_quarter_note, 0.4, drummer)
-
-# test_pattern = [
-#     "r/h crash,ride,bass/q r/tq r/tq crash,ride,bass/tq",
-#     "r/h crash,ride,bass/q r/tq r/tq crash,ride,bass/tq",
-#     "r/h crash,ride,bass/q r/tq r/tq crash,ride,bass/tq",
-#     "r/h crash,ride,bass/q r/tq r/tq crash,ride,bass/tq"
-# ]
-def parse_pattern(pattern: list):
-    for m in pattern:
-        notes = m.split(" ")
-        for n in notes:
-            to_play = []
-            if "," in n.split("/")[0]:
-                n_name = n.split("/")[0].split(",")
-            else:
-                n_name = [n.split("/")[0]]
-            n_length_raw = n.split("/")[1]
-            for l in range(len(input_names)):
-                if input_names[l] == n_length_raw:
-                    n_length = output_names[l]
-            if n_name[0] == "r":
-                pass
-            else:
-                to_play = []
-                if "crash" in n_name:
-                    chosen_crash = crashes[randint(0, 1)]
-                    to_play.append(chosen_crash)
-                if "ride" in n_name:
-                    chosen_ride = rides[randint(0, 1)]
-                    to_play.append(chosen_ride)
-                if "bass" in n_name:
-                    to_play.append(bass_drum_1)
-                if "hatopen" in n_name:
-                    to_play.append(open_hi_hat)
-                if "hatclosed" in n_name:
-                    to_play.append(closed_hi_hat)
-                if "hatpedal" in n_name:
-                    to_play.append(pedal_hi_hat)
-                if "snare" in n_name:
-                    to_play.append(tap_snare)
-                if "stick" in n_name:
-                    to_play.append(side_stick)
 
 
 def play_pattern(info, pattern, brush):
